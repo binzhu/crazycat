@@ -9,7 +9,6 @@ public class Dot {
 	public static final int STATUS_OFF = 0;
 	public static final int STATUS_IN = 9;
 	public Dot(int x, int y){
-		super();
 		this.x = x;
 		this.y = y;
 		this.status = STATUS_OFF;
@@ -32,5 +31,8 @@ public class Dot {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
+	public void setXY(int x, int y){
+		this.x = x;
+		this.y = y;
+	}
 }
