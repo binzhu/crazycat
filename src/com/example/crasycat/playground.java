@@ -35,7 +35,7 @@ public class playground extends SurfaceView implements OnTouchListener{
 		super(context);
 		// TODO Auto-generated constructor stub
 		getHolder().addCallback(callback);
-		Matrix = new Dot[COL][ROW];
+		Matrix = new Dot[COL+1][ROW+1];
 		for(int i = 0; i < ROW; i++){
 			for(int j = 0; j < COL; j++){
 				Matrix[j][i] = new Dot(j, i);
@@ -151,10 +151,15 @@ public class playground extends SurfaceView implements OnTouchListener{
 		return true;
 	}
 	
+	
 	private void move(){
 		Vector<Dot> avilable = new Vector<Dot>();
 		Vector<Dot> positive = new Vector<Dot>();
 		HashMap<Dot, Integer> al = new HashMap<Dot, Integer>();
+		if(isAtadge(cat)){
+			lose();
+			return;
+			}
 		for(int i = 1; i < 7; i++){
 			if(getNeighbor(cat, i).getStatus() == Dot.STATUS_OFF){
 				avilable.add(getNeighbor(cat, i));
@@ -167,50 +172,62 @@ public class playground extends SurfaceView implements OnTouchListener{
 		}
 		if(avilable.size() == 0){
 			win();
-		}else if(isAtadge(cat)){
-			lose();
-		}else{
+		}else if(avilable.size() == 1){
+			moveTo(avilable.get(0));
+		}
+		else{
+			//HashMap<Integer, Integer> D_D = new HashMap<Integer, Integer>();
+			Dot best = null;
 			if(positive.size() == 0){
 				int max = 0;
-				HashMap<Integer, Integer> D_D = new HashMap<Integer, Integer>();
-				for(int i = 1; i < 7; i++){
-					int k = getDistance(getNeighbor(cat, i), i);
+				
+				for(int i = 0; i < avilable.size(); i++){
+					int k = getDistance(avilable.get(i), al.get(avilable.get(i)));
+					Log.d("zhengk1", "k:"+k);
 					if(k < max){
 						max = k;
-						D_D.put(max, i);
+						//D_D.put(max, i);
+
+						best = avilable.get(i);
 					}
 				}
-				int direction = D_D.get(max);
-				moveTo(direction);
+				//int direction = D_D.get(max);
+				Log.d("zhengk1", ""+best);
+				if(best != null)
+				moveTo(best);
+				//D_D.clear();
 			}else{
 				int min = 999;
-				HashMap<Integer, Integer> D_D = new HashMap<Integer, Integer>();
-				for(int i = 1; i < 7; i++){
-					int k = getDistance(getNeighbor(cat, i), i);
+				for(int i = 0; i < positive.size(); i++){
+					int k = getDistance(positive.get(i), al.get(positive.get(i)));
 					if(false){
-						moveTo(i);
+					//	moveTo(i);
 					}
 					else{
-						if((k < min)&&(k > 0)){
+						if((k < min)){
 							min = k;
-							D_D.put(min, i);
-							Log.d("zhengk",""+min+" "+i);
+							//D_D.put(min, i);
+							//Log.d("zhengk",""+D_D);
+							best = positive.get(i);
 						}
 					}
 				}
-				int direction = D_D.get(min);
-				moveTo(direction);
+				//int direction = D_D.get(min);
+				Log.d("zhengk2", ""+best);
+				moveTo(best);
+				//D_D.clear();
 			}
 		}
 	}
 	
-	private void moveTo(int direct){
-		Dot next = getNeighbor(cat, direct);
-		if(next.getStatus() == Dot.STATUS_OFF){
-			next.setStatus(Dot.STATUS_IN);
+	private void moveTo(Dot one){
+//		Dot next = getNeighbor(cat, direct);
+
+			one.setStatus(Dot.STATUS_IN);
 			getDote(cat.getX(), cat.getY()).setStatus(Dot.STATUS_OFF);
-			cat = getDote(next.getX(), next.getY());
-		}
+			cat = getDote(one.getX(), one.getY());
+
+
 	}
 	private void lose(){
 		Toast.makeText(getContext(), "you lose", Toast.LENGTH_LONG).show();
